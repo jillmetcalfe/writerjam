@@ -1,0 +1,11 @@
+name = "writerjam-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Secrets, set with `npx wrangler secret put <NAME>` (never committed):
+#   NOTION_TOKEN        internal integration token with access to the Check-ins database
+
+
+[vars]
+# Not secret: it only identifies the database; the token is what grants access.
+NOTION_DATABASE_ID = "10d17d2f28db4063989ae1adb525a2b2"

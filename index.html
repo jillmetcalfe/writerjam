@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>writerjam</title>
+<meta name="description" content="A 30-day writing challenge, 12 October to 10 November 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+	--bg: #faf6ef;
+	--surface: #fffdf9;
+	--ink: #2a2622;
+	--muted: #7a7067;
+	--line: #e6ddd0;
+	--empty: #efe8dc;
+	--done: #c2552d;
+	--done-ink: #fffdf9;
+	--today: #2a2622;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--bg: #1b1916; --surface: #24211d; --ink: #efe8dc; --muted: #a39887;
+		--line: #3a352f; --empty: #2f2b26; --done: #e07a4f; --done-ink: #1b1916; --today: #efe8dc;
+	}
+}
+:root[data-theme="dark"] {
+	--bg: #1b1916; --surface: #24211d; --ink: #efe8dc; --muted: #a39887;
+	--line: #3a352f; --empty: #2f2b26; --done: #e07a4f; --done-ink: #1b1916; --today: #efe8dc;
+}
+* { box-sizing: border-box; }
+body {
+	margin: 0; background: var(--bg); color: var(--ink);
+	font: 16px/1.55 Inter, system-ui, sans-serif;
+}
+main { max-width: 920px; margin: 0 auto; padding: 48px 16px 80px; }
+h1, h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.4rem, 7vw, 3.6rem); margin: 0 0 4px; line-height: 1.05; }
+h2 { font-size: 1.35rem; margin: 48px 0 12px; }
+.dates { color: var(--muted); margin: 0 0 24px; font-weight: 500; }
+.intro { max-width: 60ch; }
+.intro ul { padding-left: 1.2em; }
+a { color: var(--done); }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.stat b { display: block; font: 600 1.8rem/1.1 Fraunces, Georgia, serif; }
+.stat span { color: var(--muted); font-size: 0.85rem; }
+@media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+.grid-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+table.grid { border-collapse: separate; border-spacing: 3px; font-size: 0.8rem; }
+.grid th { font-weight: 500; color: var(--muted); text-align: center; min-width: 20px; }
+.grid th.today { color: var(--ink); font-weight: 700; }
+.grid td.name { padding-right: 10px; white-space: nowrap; font-weight: 500; font-size: 0.9rem; max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+.grid td.cell { width: 20px; height: 20px; border-radius: 4px; background: var(--empty); text-align: center; line-height: 20px; }
+.grid td.cell.done { background: var(--done); color: var(--done-ink); }
+.grid td.cell.future { background: transparent; outline: 1px dashed var(--line); outline-offset: -1px; }
+.grid td.total { padding-left: 10px; color: var(--muted); white-space: nowrap; }
+
+ol.board { list-style: none; padding: 0; margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+ol.board li { display: flex; gap: 12px; align-items: baseline; padding: 10px 16px; border-top: 1px solid var(--line); }
+ol.board li:first-child { border-top: 0; }
+.rank { width: 2.2em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.who { flex: 1; font-weight: 500; overflow-wrap: anywhere; }
+.days { font-variant-numeric: tabular-nums; }
+
+ul.feed { list-style: none; padding: 0; margin: 0; }
+ul.feed li { padding: 12px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.feed .meta { color: var(--muted); font-size: 0.85rem; }
+.feed .note { margin: 4px 0 0; }
+
+.status { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+.empty { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+	<!-- DRAFT COPY: Jill to rewrite everything in this header -->
+	<header>
+		<h1>writerjam</h1>
+		<p class="dates">30 days of writing · 12 October – 10 November 2026</p>
+		<div class="intro">
+			<p>Write something every day for 30 days. Any length, any form: a page of a novel, a poem, a journal entry, three sentences you'll delete tomorrow. It all counts.</p>
+			<ul>
+				<li>Check in once a day using the form link in the group chat.</li>
+				<li>Your day ends at your own midnight. Missed a check-in? Pick the earlier date on the form.</li>
+				<li>Word counts, links and notes are optional. The tick is the point.</li>
+				<li>Late joiners welcome. Start from whichever day you're on.</li>
+			</ul>
+		</div>
+	</header>
+	<!-- /DRAFT COPY -->
+
+	<section class="stats" aria-label="Group totals">
+		<div class="stat"><b id="s-day">–</b><span>day of 30</span></div>
+		<div class="stat"><b id="s-writers">–</b><span>writers</span></div>
+		<div class="stat"><b id="s-checkins">–</b><span>check-ins</span></div>
+		<div class="stat"><b id="s-words">–</b><span>words written together</span></div>
+	</section>
+
+	<h2>The grid</h2>
+	<div class="grid-wrap"><table class="grid" id="grid"><tbody><tr><td class="empty">Loading…</td></tr></tbody></table></div>
+
+	<h2>Days written</h2>
+	<ol class="board" id="board"><li class="empty">Loading…</li></ol>
+
+	<h2>Latest check-ins</h2>
+	<ul class="feed" id="feed"><li class="empty">Loading…</li></ul>
+
+	<p class="status" id="status">Check-ins appear here within about a minute.</p>
+</main>
+
+<script>
+// One round only. Change these three lines for a second jam.
+const START = "2026-10-12";
+const DAYS = 30;
+const API = "https://writerjam-api.REPLACE.workers.dev/";
+
+const DAY_MS = 86400000;
+const startMs = Date.parse(START + "T00:00:00Z");
+const dayNum = (isoDate) => Math.round((Date.parse(isoDate + "T00:00:00Z") - startMs) / DAY_MS) + 1;
+
+// Today's day number in the viewer's own time zone.
+const now = new Date();
+const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+const today = dayNum(todayIso);
+
+// "@JillM " and "jillm" are the same person.
+const key = (h) => h.trim().replace(/^@+/, "").replace(/\s+/g, " ").toLowerCase();
+
+function tally(checkins) {
+	const people = new Map(); // key -> { name, days: Map(day -> [checkins]) }
+	for (const c of checkins) {
+		const d = dayNum(c.date);
+		if (!(d >= 1 && d <= DAYS)) continue;
+		const k = key(c.handle);
+		if (!k) continue;
+		if (!people.has(k)) people.set(k, { name: c.handle.trim().replace(/^@+/, ""), days: new Map(), firstAt: c.at });
+		const p = people.get(k);
+		if (c.at < p.firstAt) { p.firstAt = c.at; p.name = c.handle.trim().replace(/^@+/, ""); }
+		if (!p.days.has(d)) p.days.set(d, []);
+		p.days.get(d).push(c);
+	}
+	return [...people.values()].sort((a, b) => b.days.size - a.days.size || a.name.localeCompare(b.name));
+}
+
+const el = (tag, props = {}, ...kids) => {
+	const n = Object.assign(document.createElement(tag), props);
+	n.append(...kids);
+	return n;
+};
+const safeUrl = (u) => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null; } catch { return null; } };
+
+function render(data) {
+	const people = tally(data.checkins);
+	const valid = data.checkins.filter((c) => { const d = dayNum(c.date); return d >= 1 && d <= DAYS; });
+	const words = valid.reduce((s, c) => s + (Number(c.words) || 0), 0);
+
+	document.getElementById("s-day").textContent = today < 1 ? "0" : Math.min(today, DAYS);
+	document.getElementById("s-writers").textContent = people.length;
+	document.getElementById("s-checkins").textContent = people.reduce((s, p) => s + p.days.size, 0);
+	document.getElementById("s-words").textContent = words.toLocaleString();
+
+	// Grid
+	const grid = document.getElementById("grid");
+	const head = el("tr", {}, el("th"));
+	for (let d = 1; d <= DAYS; d++) head.append(el("th", { className: d === today ? "today" : "", textContent: d }));
+	head.append(el("th"));
+	const body = el("tbody");
+	for (const p of people) {
+		const row = el("tr", {}, el("td", { className: "name", textContent: p.name, title: p.name }));
+		for (let d = 1; d <= DAYS; d++) {
+			const got = p.days.get(d);
+			const td = el("td", { className: "cell" + (got ? " done" : d > today ? " future" : "") });
+			if (got) {
+				td.textContent = "✓";
+				const w = got.reduce((s, c) => s + (Number(c.words) || 0), 0);
+				td.title = `Day ${d}` + (w ? ` · ${w.toLocaleString()} words` : "");
+			}
+			row.append(td);
+		}
+		row.append(el("td", { className: "total", textContent: `${p.days.size}/${DAYS}` }));
+		body.append(row);
+	}
+	if (!people.length) body.append(el("tr", {}, el("td", { className: "empty", colSpan: DAYS + 2, textContent: "No check-ins yet. Be the first." })));
+	grid.replaceChildren(el("thead", {}, head), body);
+
+	// Leaderboard: by days written, shared places for ties (1, 1, 3).
+	const board = document.getElementById("board");
+	board.replaceChildren();
+	people.forEach((p, i) => {
+		const rank = i > 0 && people[i - 1].days.size === p.days.size ? board.lastChild.dataset.rank : String(i + 1);
+		const li = el("li", {}, el("span", { className: "rank", textContent: rank }), el("span", { className: "who", textContent: p.name }), el("span", { className: "days", textContent: `${p.days.size}/${DAYS}` }));
+		li.dataset.rank = rank;
+		board.append(li);
+	});
+	if (!people.length) board.append(el("li", { className: "empty", textContent: "Nobody on the board yet." }));
+
+	// Feed: newest 25 submissions.
+	const feed = document.getElementById("feed");
+	feed.replaceChildren();
+	for (const c of [...valid].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 25)) {
+		const meta = [`Day ${dayNum(c.date)}`];
+		if (Number(c.words)) meta.push(`${Number(c.words).toLocaleString()} words`);
+		const li = el("li", {}, el("strong", { textContent: c.handle.trim().replace(/^@+/, "") }), " ", el("span", { className: "meta", textContent: "· " + meta.join(" · ") }));
+		const url = c.link && safeUrl(c.link);
+		if (url) li.append(" · ", el("a", { href: url, textContent: "read it", rel: "nofollow noopener", target: "_blank" }));
+		if (c.note) li.append(el("p", { className: "note", textContent: c.note }));
+		feed.append(li);
+	}
+	if (!valid.length) feed.append(el("li", { className: "empty", textContent: "Nothing yet." }));
+}
+
+const CACHE_KEY = "writerjam:last";
+async function load() {
+	const status = document.getElementById("status");
+	try {
+		const res = await fetch(API, { cache: "no-store" });
+		if (!res.ok) throw new Error(res.status);
+		const data = await res.json();
+		render(data);
+		try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch {}
+		status.textContent = "Check-ins appear here within about a minute.";
+	} catch {
+		let last = null;
+		try { last = JSON.parse(localStorage.getItem(CACHE_KEY)); } catch {}
+		if (last) render(last);
+		status.textContent = last ? "Couldn't refresh just now, so this is the last copy we saw." : "Couldn't load check-ins. Try again in a minute.";
+	}
+}
+load();
+setInterval(load, 120000);
+</script>
+</body>
+</html>
