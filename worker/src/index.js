@@ -55,8 +55,11 @@ async function readCheckins(env) {
 	return rows
 		.map((r) => {
 			const p = r.properties;
+			// Find the name by type, not label, so renaming the form question
+			// ("Handle", "Your name", ...) doesn't break the page.
+			const title = Object.values(p).find((v) => v.type === "title");
 			return {
-				handle: plain(p.Handle?.title),
+				handle: plain(title?.title),
 				// Date is required on the form, but rows added by hand in Notion might
 				// skip it. Fall back to the day it was submitted (UTC).
 				date: (p.Date?.date?.start ?? r.created_time).slice(0, 10),
