@@ -72,6 +72,18 @@ ul.feed li { padding: 12px 0; border-top: 1px solid var(--line); overflow-wrap: 
 .feed .note { margin: 4px 0 0; }
 
 .status { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+
+a.person { color: inherit; text-decoration: none; }
+a.person:hover { text-decoration: underline; text-decoration-color: var(--done); }
+.back { display: inline-block; margin-top: 32px; font-weight: 500; }
+#writer h2 { margin-top: 16px; font-size: 1.8rem; }
+#writer .summary { color: var(--muted); margin: 0 0 20px; }
+ul.entries { list-style: none; padding: 0; margin: 24px 0 0; }
+ul.entries li { padding: 14px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.entries .when { font-weight: 600; }
+.entries .when span { color: var(--muted); font-weight: 400; }
+.entries .note { margin: 4px 0 0; }
+.entries a.read { display: inline-block; margin-top: 4px; font-weight: 500; }
 .empty { color: var(--muted); }
 </style>
 </head>
@@ -93,6 +105,7 @@ ul.feed li { padding: 12px 0; border-top: 1px solid var(--line); overflow-wrap: 
 	</header>
 	<!-- /DRAFT COPY -->
 
+	<div id="home">
 	<section class="stats" aria-label="Group totals">
 		<div class="stat"><b id="s-day">–</b><span>day of 30</span></div>
 		<div class="stat"><b id="s-writers">–</b><span>writers</span></div>
@@ -107,6 +120,15 @@ ul.feed li { padding: 12px 0; border-top: 1px solid var(--line); overflow-wrap: 
 
 	<h2>Latest check-ins</h2>
 	<ul class="feed" id="feed"><li class="empty">Loading…</li></ul>
+	</div>
+
+	<section id="writer" hidden>
+		<a class="back" href="#">← All writers</a>
+		<h2 id="w-name"></h2>
+		<p class="summary" id="w-summary"></p>
+		<div class="grid-wrap"><table class="grid" id="w-grid"></table></div>
+		<ul class="entries" id="w-entries"></ul>
+	</section>
 
 	<p class="status" id="status">Check-ins appear here within about a minute.</p>
 </main>
@@ -136,7 +158,7 @@ function tally(checkins) {
 		if (!(d >= 1 && d <= DAYS)) continue;
 		const k = key(c.handle);
 		if (!k) continue;
-		if (!people.has(k)) people.set(k, { name: c.handle.trim().replace(/^@+/, ""), days: new Map(), firstAt: c.at });
+		if (!people.has(k)) people.set(k, { key: k, name: c.handle.trim().replace(/^@+/, ""), days: new Map(), firstAt: c.at });
 		const p = people.get(k);
 		if (c.at < p.firstAt) { p.firstAt = c.at; p.name = c.handle.trim().replace(/^@+/, ""); }
 		if (!p.days.has(d)) p.days.set(d, []);
@@ -150,45 +172,33 @@ const el = (tag, props = {}, ...kids) => {
 	n.append(...kids);
 	return n;
 };
+// Each writer's page lives at #/w/<name>, so it's shareable without extra files.
+const writerHref = (k) => "#/w/" + encodeURIComponent(k);
+const personLink = (p) => el("a", { className: "person", href: writerHref(p.key), textContent: p.name });
 const safeUrl = (u) => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null; } catch { return null; } };
 
 function render(data) {
 	const people = tally(data.checkins);
-	const valid = data.checkins.filter((c) => { const d = dayNum(c.date); return d >= 1 && d <= DAYS; });
+	const byKey = new Map(people.map((p) => [p.key, p]));
+	lastPeople = byKey;
+	const valid = data.checkins.filter((c) => { const d = dayNum(c.date); return d >= 1 && d <= DAYS && byKey.has(key(c.handle)); });
 
 	document.getElementById("s-day").textContent = today < 1 ? "0" : Math.min(today, DAYS);
 	document.getElementById("s-writers").textContent = people.length;
 	document.getElementById("s-checkins").textContent = people.reduce((s, p) => s + p.days.size, 0);
 
 	// Grid
-	const grid = document.getElementById("grid");
-	const head = el("tr", {}, el("th"));
-	for (let d = 1; d <= DAYS; d++) head.append(el("th", { className: d === today ? "today" : "", textContent: d }));
-	head.append(el("th"));
 	const body = el("tbody");
-	for (const p of people) {
-		const row = el("tr", {}, el("td", { className: "name", textContent: p.name, title: p.name }));
-		for (let d = 1; d <= DAYS; d++) {
-			const got = p.days.get(d);
-			const td = el("td", { className: "cell" + (got ? " done" : d > today ? " future" : "") });
-			if (got) {
-				td.textContent = "✓";
-				td.title = `Day ${d}`;
-			}
-			row.append(td);
-		}
-		row.append(el("td", { className: "total", textContent: `${p.days.size}/${DAYS}` }));
-		body.append(row);
-	}
+	for (const p of people) body.append(gridRow(p));
 	if (!people.length) body.append(el("tr", {}, el("td", { className: "empty", colSpan: DAYS + 2, textContent: "No check-ins yet. Be the first." })));
-	grid.replaceChildren(el("thead", {}, head), body);
+	document.getElementById("grid").replaceChildren(gridHead(), body);
 
 	// Leaderboard: by days written, shared places for ties (1, 1, 3).
 	const board = document.getElementById("board");
 	board.replaceChildren();
 	people.forEach((p, i) => {
 		const rank = i > 0 && people[i - 1].days.size === p.days.size ? board.lastChild.dataset.rank : String(i + 1);
-		const li = el("li", {}, el("span", { className: "rank", textContent: rank }), el("span", { className: "who", textContent: p.name }), el("span", { className: "days", textContent: `${p.days.size}/${DAYS}` }));
+		const li = el("li", {}, el("span", { className: "rank", textContent: rank }), el("span", { className: "who" }, personLink(p)), el("span", { className: "days", textContent: `${p.days.size}/${DAYS}` }));
 		li.dataset.rank = rank;
 		board.append(li);
 	});
@@ -198,14 +208,69 @@ function render(data) {
 	const feed = document.getElementById("feed");
 	feed.replaceChildren();
 	for (const c of [...valid].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 25)) {
-		const li = el("li", {}, el("strong", { textContent: c.handle.trim().replace(/^@+/, "") }), " ", el("span", { className: "meta", textContent: `· Day ${dayNum(c.date)}` }));
+		const li = el("li", {}, el("strong", {}, personLink(byKey.get(key(c.handle)))), " ", el("span", { className: "meta", textContent: `· Day ${dayNum(c.date)}` }));
 		const url = c.link && safeUrl(c.link);
 		if (url) li.append(" · ", el("a", { href: url, textContent: "read it", rel: "nofollow noopener", target: "_blank" }));
 		if (c.note) li.append(el("p", { className: "note", textContent: c.note }));
 		feed.append(li);
 	}
 	if (!valid.length) feed.append(el("li", { className: "empty", textContent: "Nothing yet." }));
+	route();
 }
+
+function gridHead() {
+	const head = el("tr", {}, el("th"));
+	for (let d = 1; d <= DAYS; d++) head.append(el("th", { className: d === today ? "today" : "", textContent: d }));
+	head.append(el("th"));
+	return el("thead", {}, head);
+}
+
+function gridRow(p) {
+	const row = el("tr", {}, el("td", { className: "name", title: p.name }, personLink(p)));
+	for (let d = 1; d <= DAYS; d++) {
+		const got = p.days.get(d);
+		const td = el("td", { className: "cell" + (got ? " done" : d > today ? " future" : "") });
+		if (got) {
+			td.textContent = "✓";
+			td.title = `Day ${d}`;
+		}
+		row.append(td);
+	}
+	row.append(el("td", { className: "total", textContent: `${p.days.size}/${DAYS}` }));
+	return row;
+}
+
+// Show the home view, or one writer's page when the address ends in #/w/<name>.
+let lastPeople = null;
+function route(fromNav) {
+	const m = location.hash.match(/^#\/w\/(.+)$/);
+	const k = m && key(decodeURIComponent(m[1]));
+	document.getElementById("home").hidden = !!k;
+	document.querySelector(".intro").hidden = !!k;
+	document.getElementById("writer").hidden = !k;
+	if (!k || !lastPeople) return;
+
+	const p = lastPeople.get(k);
+	document.getElementById("w-name").textContent = p ? p.name : decodeURIComponent(m[1]);
+	document.getElementById("w-summary").textContent = p ? `${p.days.size} of ${DAYS} days written` : "No check-ins from that name yet.";
+	document.getElementById("w-grid").replaceChildren(...(p ? [gridHead(), el("tbody", {}, gridRow(p))] : []));
+	document.getElementById("w-grid").parentElement.hidden = !p;
+
+	const list = document.getElementById("w-entries");
+	list.replaceChildren();
+	if (!p) return;
+	const entries = [...p.days.entries()].sort((a, b) => a[0] - b[0]).flatMap(([d, cs]) => cs.map((c) => [d, c]));
+	for (const [d, c] of entries) {
+		const date = new Date(c.date + "T00:00:00Z").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+		const li = el("li", {}, el("div", { className: "when" }, `Day ${d} `, el("span", { textContent: `· ${date}` })));
+		if (c.note) li.append(el("p", { className: "note", textContent: c.note }));
+		const url = c.link && safeUrl(c.link);
+		if (url) li.append(el("a", { className: "read", href: url, textContent: "Read it →", rel: "nofollow noopener", target: "_blank" }));
+		list.append(li);
+	}
+	if (fromNav) window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", () => route(true));
 
 const CACHE_KEY = "writerjam:last";
 async function load() {
