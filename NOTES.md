@@ -37,4 +37,4 @@ Half Day Build friends.
 - **Decisions:** `docs/decision-log.md`.
 
 ## Open
-- Intro and rules text in `index.html` (between the `DRAFT COPY` markers) is a placeholder. Jill to rewrite.
+- Nothing. The intro and rules were drafted by Claude and approved by Jill on 2026-10-11.
