@@ -63,7 +63,6 @@ async function readCheckins(env) {
 				// Date is required on the form, but rows added by hand in Notion might
 				// skip it. Fall back to the day it was submitted (UTC).
 				date: (p.Date?.date?.start ?? r.created_time).slice(0, 10),
-				words: p.Words?.number ?? null,
 				link: p.Link?.url ?? null,
 				note: plain(p.Note?.rich_text),
 				at: r.created_time,

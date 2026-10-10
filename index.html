@@ -44,11 +44,10 @@ h2 { font-size: 1.35rem; margin: 48px 0 12px; }
 .intro ul { padding-left: 1.2em; }
 a { color: var(--done); }
 
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
 .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
 .stat b { display: block; font: 600 1.8rem/1.1 Fraunces, Georgia, serif; }
 .stat span { color: var(--muted); font-size: 0.85rem; }
-@media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
 .grid-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
 table.grid { border-collapse: separate; border-spacing: 3px; font-size: 0.8rem; }
@@ -87,7 +86,7 @@ ul.feed li { padding: 12px 0; border-top: 1px solid var(--line); overflow-wrap: 
 			<ul>
 				<li>Check in once a day using the form link in the group chat.</li>
 				<li>Your day ends at your own midnight. Missed a check-in? Pick the earlier date on the form.</li>
-				<li>Word counts, links and notes are optional. The tick is the point.</li>
+				<li>Links and notes are optional. The tick is the point.</li>
 				<li>Late joiners welcome. Start from whichever day you're on.</li>
 			</ul>
 		</div>
@@ -98,7 +97,6 @@ ul.feed li { padding: 12px 0; border-top: 1px solid var(--line); overflow-wrap: 
 		<div class="stat"><b id="s-day">–</b><span>day of 30</span></div>
 		<div class="stat"><b id="s-writers">–</b><span>writers</span></div>
 		<div class="stat"><b id="s-checkins">–</b><span>check-ins</span></div>
-		<div class="stat"><b id="s-words">–</b><span>words written together</span></div>
 	</section>
 
 	<h2>The grid</h2>
@@ -157,12 +155,10 @@ const safeUrl = (u) => { try { const x = new URL(u); return /^https?:$/.test(x.p
 function render(data) {
 	const people = tally(data.checkins);
 	const valid = data.checkins.filter((c) => { const d = dayNum(c.date); return d >= 1 && d <= DAYS; });
-	const words = valid.reduce((s, c) => s + (Number(c.words) || 0), 0);
 
 	document.getElementById("s-day").textContent = today < 1 ? "0" : Math.min(today, DAYS);
 	document.getElementById("s-writers").textContent = people.length;
 	document.getElementById("s-checkins").textContent = people.reduce((s, p) => s + p.days.size, 0);
-	document.getElementById("s-words").textContent = words.toLocaleString();
 
 	// Grid
 	const grid = document.getElementById("grid");
@@ -177,8 +173,7 @@ function render(data) {
 			const td = el("td", { className: "cell" + (got ? " done" : d > today ? " future" : "") });
 			if (got) {
 				td.textContent = "✓";
-				const w = got.reduce((s, c) => s + (Number(c.words) || 0), 0);
-				td.title = `Day ${d}` + (w ? ` · ${w.toLocaleString()} words` : "");
+				td.title = `Day ${d}`;
 			}
 			row.append(td);
 		}
@@ -203,9 +198,7 @@ function render(data) {
 	const feed = document.getElementById("feed");
 	feed.replaceChildren();
 	for (const c of [...valid].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 25)) {
-		const meta = [`Day ${dayNum(c.date)}`];
-		if (Number(c.words)) meta.push(`${Number(c.words).toLocaleString()} words`);
-		const li = el("li", {}, el("strong", { textContent: c.handle.trim().replace(/^@+/, "") }), " ", el("span", { className: "meta", textContent: "· " + meta.join(" · ") }));
+		const li = el("li", {}, el("strong", { textContent: c.handle.trim().replace(/^@+/, "") }), " ", el("span", { className: "meta", textContent: `· Day ${dayNum(c.date)}` }));
 		const url = c.link && safeUrl(c.link);
 		if (url) li.append(" · ", el("a", { href: url, textContent: "read it", rel: "nofollow noopener", target: "_blank" }));
 		if (c.note) li.append(el("p", { className: "note", textContent: c.note }));
