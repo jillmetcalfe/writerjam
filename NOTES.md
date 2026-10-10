@@ -19,6 +19,22 @@ Half Day Build friends.
   challenge. Otherwise let it lapse at renewal.
 - **makerjam.xyz:** auto-renew off, being dropped.
 
-## Handoff
-- 2026-10-10: [HANDOFF.md](HANDOFF.md). The idea stage. The start date and tracker design
-  are still to be decided.
+## How it works (live since 2026-10-11)
+- **Challenge:** 12 Oct – 10 Nov 2026. Dates are in `index.html` (`START`, `DAYS`).
+- **Check-in:** a public Notion Form (link shared only in the group chat):
+  https://jillmetcalfe.notion.site/3f56227653ba8063b820d34e2ef2271f
+  It writes to the "writerjam check-ins" database in Jill's personal workspace:
+  https://app.notion.com/p/10d17d2f28db4063989ae1adb525a2b2
+  - Fields: Your name (title), Date, Link, Note. Words was dropped on purpose.
+  - A Notion automation fills Date with today **only when Date is empty**. Without
+    that condition it overwrote catch-up dates (tested and fixed 2026-10-11).
+- **Worker:** `worker/`, deployed as `writerjam-api` at https://writerjam-api.jillmetcalfe.workers.dev
+  It reads Notion with the `NOTION_TOKEN` secret (the "writerjam" integration) and caches for 60s.
+  Deploy with `cd worker && npx wrangler deploy`.
+- **Page:** `index.html` on GitHub Pages (`jillmetcalfe/writerjam`), served at writerjam.xyz.
+  HTTPS is enforced. DNS is at Porkbun: 4 GitHub A records plus a `www` CNAME.
+- **Moderation:** delete a row in Notion and it's gone from the site within about a minute.
+- **Decisions:** `docs/decision-log.md`.
+
+## Open
+- Intro and rules text in `index.html` (between the `DRAFT COPY` markers) is a placeholder. Jill to rewrite.
