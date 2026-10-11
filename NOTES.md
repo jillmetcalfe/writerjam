@@ -30,14 +30,17 @@ Half Day Build friends.
     that condition it overwrote catch-up dates (tested and fixed 2026-10-11).
 - **Worker:** `worker/`, deployed as `writerjam-api` at https://writerjam-api.jillmetcalfe.workers.dev
   It reads Notion with the `NOTION_TOKEN` secret (the "writerjam" integration) and caches for 60s.
-  Deploy with `cd worker && npx wrangler deploy`.
+  Deploy with `cd worker && npx wrangler deploy` (only needed when Worker code changes).
 - **Page:** `index.html` on GitHub Pages (`jillmetcalfe/writerjam`), served at writerjam.xyz.
   HTTPS is enforced. DNS is at Porkbun: 4 GitHub A records plus a `www` CNAME.
 - **Day 0:** 11 Oct is a warm-up day that counts toward scores, so the top score is 31/30 (`FIRST` in `index.html`).
 - **Writer pages:** `#/w/<name>` in the same `index.html`. Click any name to get there.
 - **Suggestions:** a second Notion form, embedded behind the "Make a suggestion" button. Submissions go to Jill's Notion and are never shown on the site. Tested 2026-10-11.
 - **Moderation:** delete a row in Notion and it's gone from the site within about a minute.
-- **Decisions:** `docs/decision-log.md`.
+- **Decisions:** `DECISIONS.md`. **History:** `CHANGELOG.md`.
 
 ## Open
 - Nothing. The intro and rules were drafted by Claude and approved by Jill on 2026-10-11.
+
+## Handoff
+- 2026-10-11 02:30: [HANDOFF.md](HANDOFF.md). Live and running, nothing pending. Covers troubleshooting, local testing and what to ask after 10 Nov.
