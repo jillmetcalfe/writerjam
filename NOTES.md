@@ -20,9 +20,9 @@ Half Day Build friends.
 - **makerjam.xyz:** auto-renew off, being dropped.
 
 ## How it works (live since 2026-10-11)
-- **Challenge:** 12 Oct – 10 Nov 2026. Dates are in `index.html` (`START`, `DAYS`).
-- **Check-in:** a public Notion Form (link shared only in the group chat):
-  https://jillmetcalfe.notion.site/3f56227653ba8063b820d34e2ef2271f
+- **Challenge:** warm-up day 0 on 11 Oct, then days 1–30, 12 Oct – 10 Nov 2026. Dates are in `index.html` (`START`, `DAYS`, `FIRST`).
+- **Check-in:** a public Notion Form. Its link is shared only in the group chat and kept
+  out of this public repo on purpose. Get it from the database's "Check in" tab → Share.
   It writes to the "writerjam check-ins" database in Jill's personal workspace:
   https://app.notion.com/p/10d17d2f28db4063989ae1adb525a2b2
   - Fields: Your name (title), Date, Link, Note. Words was dropped on purpose.

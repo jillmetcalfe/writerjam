@@ -43,6 +43,8 @@ Chrome (`--headless=new --virtual-time-budget=5000 --dump-dom` or `--screenshot`
 
 ## Things not to do
 - Don't put the Notion key anywhere in the repo or the chat.
+- Don't commit the check-in form link. The repo is public, and the link is for the group chat only.
+  It was removed from `NOTES.md` on 2026-10-11 but is still in git history.
 - Don't re-suggest the rejected backends in `DECISIONS.md` without new information.
 - Don't move this folder to `~/Developer/writerjam`. Memory is tied to the
   `Claude Code/Jill` folder. See the memory note `repos-belong-in-developer`.
