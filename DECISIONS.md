@@ -69,6 +69,11 @@ by JavaScript and the domain is new. Revisit if Jill asks.
 There's no multi-round support. A second jam means changing the config lines and
 clearing or replacing the database.
 
+### 2026-10-11: If open sign-up happens, use Clerk for login
+Jill's choice, for when the `WISHLIST.md` item gets built. Cloudflare Access was set
+aside because its free plan caps at 50 people, and building magic links ourselves
+means too much code to maintain.
+
 ## Rejected
 
 - **Google Form + Sheet backend** (2026-10-10). It was simplest, but Jill wanted Notion

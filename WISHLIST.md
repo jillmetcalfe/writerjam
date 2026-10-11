@@ -9,7 +9,7 @@ Ideas for later. Nothing here is scheduled.
 anyone else. People check in with a button on the site.
 
 **Shape (discussed 2026-10-11):**
-- **Login:** Clerk (email code or Google), dropped into `index.html`. The free tier
+- **Login: Clerk (Jill confirmed 2026-10-11).** Email code or Google, dropped into `index.html`. The free tier
   covers thousands of users a month.
   - Cloudflare Access would need no code, but its free plan caps at 50 people.
   - Building magic links in the Worker means the most code to maintain.
