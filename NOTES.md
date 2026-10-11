@@ -33,6 +33,9 @@ Half Day Build friends.
   Deploy with `cd worker && npx wrangler deploy`.
 - **Page:** `index.html` on GitHub Pages (`jillmetcalfe/writerjam`), served at writerjam.xyz.
   HTTPS is enforced. DNS is at Porkbun: 4 GitHub A records plus a `www` CNAME.
+- **Day 0:** 11 Oct is a warm-up day that counts toward scores, so the top score is 31/30 (`FIRST` in `index.html`).
+- **Writer pages:** `#/w/<name>` in the same `index.html`. Click any name to get there.
+- **Suggestions:** a second Notion form, embedded behind the "Make a suggestion" button. Submissions go to Jill's Notion and are never shown on the site. Tested 2026-10-11.
 - **Moderation:** delete a row in Notion and it's gone from the site within about a minute.
 - **Decisions:** `docs/decision-log.md`.
 
