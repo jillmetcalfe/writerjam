@@ -37,7 +37,7 @@ Half Day Build friends.
 - **Writer pages:** `#/w/<name>` in the same `index.html`. Click any name to get there.
 - **Suggestions:** a second Notion form, embedded behind the "Make a suggestion" button. Submissions go to Jill's Notion and are never shown on the site. Tested 2026-10-11.
 - **Moderation:** delete a row in Notion and it's gone from the site within about a minute.
-- **Decisions:** `DECISIONS.md`. **History:** `CHANGELOG.md`.
+- **Decisions:** `DECISIONS.md`. **History:** `CHANGELOG.md`. **Ideas:** `WISHLIST.md`.
 
 ## Open
 - Nothing. The intro and rules were drafted by Claude and approved by Jill on 2026-10-11.
